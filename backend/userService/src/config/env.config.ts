@@ -27,6 +27,11 @@ const envConfig = () => {
     JWT_EXPIRES_IN: getEnvVars("JWT_EXPIRES_IN", "1d"),
 
     FRONTEND_URL: getEnvVars("FRONTEND_URL", "http://localhost:3000"),
+
+    AWS_ACCESS_KEY_ID: getEnvVars("AWS_ACCESS_KEY_ID"),
+    AWS_SECRET_ACCESS_KEY: getEnvVars("AWS_SECRET_ACCESS_KEY"),
+    AWS_REGION: getEnvVars("AWS_REGION"),
+    AWS_S3_BUCKET_NAME: getEnvVars("AWS_S3_BUCKET_NAME"),
   };
 };
 

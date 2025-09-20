@@ -8,6 +8,9 @@ import { BadRequestException, NotFoundException } from "../utils/appError";
 import { AuthenticatedRequest } from "../middleware/auth.middleware";
 import { otpEMailTemplate, verfiedEmailTemplate } from "../templates/html";
 import { ENV_VARS } from "../config/env.config";
+import { HTTP_STATUS } from "../config/http.config";
+import { s3 } from "../config/s3.config";
+import { DeleteObjectCommand } from "@aws-sdk/client-s3";
 
 export const loginUserController = asyncHandler(async (req: Request, res: Response) => {
   const { email } = req.body;
@@ -19,7 +22,7 @@ export const loginUserController = asyncHandler(async (req: Request, res: Respon
   const rateLimitKey = `otp:ratelimit:${email}`;
   const rateLimit = await redisClient.get(rateLimitKey);
   if (rateLimit) {
-    res.status(429).json({
+    res.status(HTTP_STATUS.TOO_MANY_REQUESTS).json({
       message: "Too many requests. Please wait before requesting a new OTP.",
     });
     return;
@@ -48,7 +51,7 @@ export const loginUserController = asyncHandler(async (req: Request, res: Respon
 
   await publishToQueue("send-otp", message);
 
-  res.status(200).json({
+  res.status(HTTP_STATUS.OK).json({
     message: "OTP sent to your email",
   });
 });
@@ -89,7 +92,7 @@ export const verifyUserController = asyncHandler(async (req: Request, res: Respo
 
   const { token, expiresAt } = signJwtToken({ userId: user._id.toString() });
 
-  res.json({
+  res.status(HTTP_STATUS.OK).json({
     message: "User Verified",
     user,
     token,
@@ -116,8 +119,43 @@ export const updateName = asyncHandler(
 
     const { token, expiresAt } = signJwtToken({ userId: user._id.toString() });
 
-    res.json({
+  res.status(HTTP_STATUS.OK).json({
       message: "User Updated",
+      user,
+      token,
+      expiresAt,
+    });
+  }
+);
+
+export const changeProfilePicture = asyncHandler(
+  async (req: AuthenticatedRequest, res: Response) => {
+    const user = await User.findById(req.user?._id);
+
+    if (!user) {
+      throw new NotFoundException("User not found");
+    }
+
+    if (user.profilePicture) {
+      const oldKey = user.profilePicture.split(".com/")[1];
+      const deleteParams = {
+        Bucket: ENV_VARS.AWS_S3_BUCKET_NAME,
+        Key: oldKey,
+      };
+      await s3.send(new DeleteObjectCommand(deleteParams));
+    }
+
+    if (!req.file) {
+      throw new BadRequestException("Please upload a file");
+    }
+
+    user.profilePicture = (req.file as any).location;
+    await user.save();
+
+    const { token, expiresAt } = signJwtToken({ userId: user._id.toString() });
+
+    res.status(HTTP_STATUS.OK).json({
+      message: "Profile picture updated",
       user,
       token,
       expiresAt,
@@ -135,5 +173,5 @@ export const getAUser = asyncHandler(async (req: Request, res: Response) => {
   if (!user) {
     throw new NotFoundException("User not found");
   }
-  res.json(user);
+  res.status(HTTP_STATUS.OK).json(user);
 });
