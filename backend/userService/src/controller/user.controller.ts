@@ -100,13 +100,13 @@ export const verifyUserController = asyncHandler(async (req: Request, res: Respo
   });
 });
 
-export const myProfile = asyncHandler(
+export const myProfileController = asyncHandler(
   async (req: AuthenticatedRequest, res: Response) => {
     res.json(req.user);
   }
 );
 
-export const updateName = asyncHandler(
+export const updateNameController = asyncHandler(
   async (req: AuthenticatedRequest, res: Response) => {
     const user = await User.findById(req.user?._id);
 
@@ -128,7 +128,7 @@ export const updateName = asyncHandler(
   }
 );
 
-export const changeProfilePicture = asyncHandler(
+export const changeProfilePictureController = asyncHandler(
   async (req: AuthenticatedRequest, res: Response) => {
     const user = await User.findById(req.user?._id);
 
@@ -163,12 +163,12 @@ export const changeProfilePicture = asyncHandler(
   }
 );
 
-export const getAllUsers = asyncHandler(async (req: Request, res: Response) => {
+export const getAllUsersController = asyncHandler(async (req: Request, res: Response) => {
   const users = await User.find();
   res.json(users);
 });
 
-export const getAUser = asyncHandler(async (req: Request, res: Response) => {
+export const getAUserController = asyncHandler(async (req: Request, res: Response) => {
   const user = await User.findById(req.params.id);
   if (!user) {
     throw new NotFoundException("User not found");

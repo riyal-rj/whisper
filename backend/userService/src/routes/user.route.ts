@@ -1,11 +1,11 @@
 import { Router } from "express";
 import {
-  changeProfilePicture,
-  getAUser,
-  getAllUsers,
+  changeProfilePictureController,
+  getAUserController,
+  getAllUsersController,
   loginUserController,
-  myProfile,
-  updateName,
+  myProfileController,
+  updateNameController,
   verifyUserController,
 } from "../controller/user.controller";
 import { isAuth } from "../middleware/auth.middleware";
@@ -16,16 +16,16 @@ const userRouter = Router();
 userRouter.post("/login", loginUserController);
 userRouter.post("/verify", verifyUserController);
 
-userRouter.get("/me", isAuth, myProfile);
-userRouter.put("/update-name", isAuth, updateName);
+userRouter.get("/me", isAuth, myProfileController);
+userRouter.put("/update-name", isAuth, updateNameController);
 userRouter.put(
   "/update-profile-picture",
   isAuth,
   upload.single("profilePicture"),
-  changeProfilePicture
+  changeProfilePictureController
 );
 
-userRouter.get("/", getAllUsers);
-userRouter.get("/:id", getAUser);
+userRouter.get("/", getAllUsersController);
+userRouter.get("/:id", getAUserController);
 
 export default userRouter;
