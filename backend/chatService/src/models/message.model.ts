@@ -53,6 +53,8 @@ const messageSchema: Schema<MessageInterface> = new Schema(
   },
   {
     timestamps: true,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
   }
 );
 

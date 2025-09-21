@@ -23,7 +23,7 @@ const Header: React.FC = () => {
         {user ? (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="relative h-10 w-10 rounded-full">
+              <Button variant="ghost" className="relative h-10 w-10 rounded-full" onClick={() => navigate('/profile')}>
                 <Avatar className="h-10 w-10">
                   <AvatarImage src={user.profilePicture} alt={user.name} />
                   <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
@@ -40,6 +40,9 @@ const Header: React.FC = () => {
                 </div>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => navigate('/profile')}>
+                Update Profile
+              </DropdownMenuItem>
               <DropdownMenuItem onClick={handleLogout}>
                 Log out
               </DropdownMenuItem>

@@ -16,7 +16,7 @@ initSocket(server);
 
 
 app.use(express.json());
-
+app.use(cors());
 app.use("/api/v1/chat", chatRouter);
 
 async function startServer() {

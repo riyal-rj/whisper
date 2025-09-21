@@ -33,7 +33,7 @@ const VerifyOtpPage: React.FC = () => {
       localStorage.setItem('expiresAt', expiresAt); // Store token expiration
 
       localStorage.removeItem('userEmail'); // Clear email from local storage
-      navigate('/home'); // Redirect to home page
+      navigate('/dashboard'); // Redirect to dashboard page
     } catch (error: any) {
       toast.error(error.response?.data?.message || 'An error occurred');
     }
