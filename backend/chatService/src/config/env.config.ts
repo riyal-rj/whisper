@@ -3,7 +3,7 @@ import { getEnvVars } from "../utils/getEnv";
 const envConfig = () => {
   const username = getEnvVars("MONGO_USERNAME");
   const password = getEnvVars("MONGO_PASSWORD");
-  const database = getEnvVars("MONGO_DATABASE_CHAT");
+  const database = getEnvVars("MONGO_DATABASE");
 
   let mongoUri = getEnvVars("MONGO_URI");
 
@@ -14,19 +14,25 @@ const envConfig = () => {
 
   return {
     NODE_ENV: getEnvVars("NODE_ENV", "development"),
-    PORT: getEnvVars("CHAT_PORT"),
+    //CORS_ORIGIN: getEnvVars("CORS_ORIGIN", "http://localhost:3000"),
+    USER_SERVICE_URL: getEnvVars("USER_SERVICE"),
 
     MONGO_URI: mongoUri,
-    REDIS_URL: getEnvVars("REDIS_URL"),
 
-    RABBITMQ_HOST: getEnvVars("Rabbitmq_Host"),
-    RABBITMQ_USERNAME: getEnvVars("Rabbitmq_Username"),
-    RABBITMQ_PASSWORD: getEnvVars("Rabbitmq_Password"),
 
-    JWT_SECRET: getEnvVars("JWT_SECRET", "secret_jwt"),
-    JWT_EXPIRES_IN: getEnvVars("JWT_EXPIRES_IN", "1d"),
+    JWT_SECRET: getEnvVars("JWT_SECRET"),
+    JWT_EXPIRES_IN: getEnvVars("JWT_EXPIRES_IN"),
 
-    CORS_ORIGIN: getEnvVars("CORS_ORIGIN", "http://localhost:3000"),
+    CLOUDINARY_CLOUD_NAME: getEnvVars("CLOUDINARY_CLOUD_NAME"),
+    CLOUDINARY_API_KEY: getEnvVars("CLOUDINARY_API_KEY"),
+    CLOUDINARY_API_SECRET: getEnvVars("CLOUDINARY_API_SECRET"),
+
+    AWS_ACCESS_KEY_ID: getEnvVars("AWS_ACCESS_KEY_ID"),
+    AWS_SECRET_ACCESS_KEY: getEnvVars("AWS_SECRET_ACCESS_KEY"),
+    AWS_REGION: getEnvVars("AWS_REGION"),
+    AWS_S3_BUCKET_NAME: getEnvVars("AWS_S3_BUCKET_NAME"),
+
+    PORT: getEnvVars("PORT", "5002"),
   };
 };
 
