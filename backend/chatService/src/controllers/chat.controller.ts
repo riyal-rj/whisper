@@ -355,3 +355,77 @@ export const getAllChats = asyncHandler(
     res.status(HTTP_STATUS.OK).json({ chats: chatWithUserData });
   }
 );
+
+export const deleteMessage = asyncHandler(
+  async (req: AuthenticatedRequest, res: Response) => {
+    const { msgId } = req.params;
+    const userId = req.user?._id;
+
+    if (!msgId) {
+      throw new BadRequestException("Message ID is required");
+    }
+
+    // Find the message
+    const message = await Message.findById(msgId);
+    if (!message) {
+      throw new NotFoundException("Message not found");
+    }
+
+    // Find the chat
+    const chat = await Chat.findById(message.chatId);
+    if (!chat) {
+      throw new NotFoundException("Associated chat not found");
+    }
+
+    // Authorization:
+    // Allow sender OR group admin of the chat
+    const isSender = message.sender.toString() === userId.toString();
+    const isGroupAdmin =
+      chat.isGroupChat && chat.groupAdmin?.toString() === userId.toString();
+
+    if (!isSender && !isGroupAdmin) {
+      throw new BadRequestException("You are not authorized to delete this message");
+    }
+
+    // Delete media from S3 if present
+    if (message.image && message.image.publicId) {
+      await s3.send(
+        new DeleteObjectCommand({
+          Bucket: process.env.AWS_S3_BUCKET_NAME!,
+          Key: message.image.publicId,
+        })
+      );
+    }
+
+    if (message.video && message.video.publicId) {
+      await s3.send(
+        new DeleteObjectCommand({
+          Bucket: process.env.AWS_S3_BUCKET_NAME!,
+          Key: message.video.publicId,
+        })
+      );
+    }
+
+    // Delete the message itself
+    await Message.deleteOne({ _id: msgId });
+
+    // If this was the latest message, update Chat.latestMessage
+    if (chat.latestMessage?.text === message.text && chat.latestMessage?.sender.toString() === message.sender.toString()) {
+      // find last remaining message
+      const lastMsg = await Message.findOne({ chatId: chat._id }).sort({
+        createdAt: -1,
+      });
+
+      await Chat.findByIdAndUpdate(chat._id, {
+        latestMessage: lastMsg
+          ? { text: lastMsg.text, sender: lastMsg.sender }
+          : null,
+      });
+    }
+
+    res.status(HTTP_STATUS.OK).json({
+      message: "Message deleted successfully",
+      msgId,
+    });
+  }
+);

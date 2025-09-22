@@ -10,30 +10,39 @@ import CreateGroupChatDialog from '../components/CreateGroupChatDialog';
 import axios from 'axios';
 import { toast } from 'sonner';
 
+interface ChatUser {
+  _id: string;
+  name: string;
+  email: string;
+  profilePicture?: string;
+}
+
+interface LatestMessage {
+  text: string;
+  sender: string;
+}
+
 interface Chat {
   _id: string;
   users: string[];
-  latestMessage?: {
-    text: string;
-    sender: string;
-  };
+  latestMessage?: LatestMessage;
   isGroupChat: boolean;
   groupName?: string;
   groupAdmin?: string;
   members?: string[];
   unseenCount?: number;
-  user?: { // This will be the other user's data for direct chats
-    _id: string;
-    name: string;
-    email: string;
-    profilePicture?: string;
-  };
+  user?: ChatUser;
+}
+
+interface ChatListItem {
+  chat: Chat;
+  user?: ChatUser;
 }
 
 const DashboardPage: React.FC = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [chats, setChats] = useState<Chat[]>([]);
+  const [chats, setChats] = useState<ChatListItem[]>([]);
   const [selectedChat, setSelectedChat] = useState<Chat | null>(null); 
   const [isCreateChatDialogOpen, setIsCreateChatDialogOpen] = useState(false);
   const [isCreateGroupChatDialogOpen, setIsCreateGroupChatDialogOpen] = useState(false);
