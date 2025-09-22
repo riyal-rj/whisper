@@ -30,7 +30,7 @@ const CreateGroupChatDialog: React.FC<CreateGroupChatDialogProps> = ({ isOpen, o
       const fetchUsers = async () => {
         try {
           const token = localStorage.getItem('token');
-          const response = await axios.get('http://localhost:5000/api/v1/users', {
+          const response = await axios.get('http://localhost:5000/api/v1/', {
             headers: {
               Authorization: `Bearer ${token}`,
             },

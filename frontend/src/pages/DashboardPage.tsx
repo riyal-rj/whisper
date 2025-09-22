@@ -65,27 +65,30 @@ const DashboardPage: React.FC = () => {
     setSelectedChat(chat);
   };
 
-  const handleDeleteChat = async (chatId: string) => {
-    if (!window.confirm("Are you sure you want to delete this chat?")) {
-      return;
-    }
-    console.log("Frontend: Deleting chat with ID:", chatId);
-    try {
-      const token = localStorage.getItem('token');
-      await axios.delete(`http://localhost:5002/api/v1/chat/${chatId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      toast.success("Chat deleted successfully!");
-      fetchChats(); // Refresh chat list
-      if (selectedChat?._id === chatId) {
-        setSelectedChat(null); // Clear selected chat if it was deleted
-      }
-    } catch (error: any) {
-      toast.error(error.response?.data?.message || 'Failed to delete chat');
-    }
-  };
+  const handleDeleteChat = (chatId: string) => {
+  toast.warning("Are you sure you want to delete this chat?", {
+    action: {
+      label: "Delete",
+      onClick: async () => {
+        try {
+          const token = localStorage.getItem('token');
+          await axios.delete(`http://localhost:5002/api/v1/chat/${chatId}`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+          toast.success("Chat deleted successfully!");
+          fetchChats();
+          if (selectedChat?._id === chatId) {
+            setSelectedChat(null);
+          }
+        } catch (error: any) {
+          toast.error(error.response?.data?.message || 'Failed to delete chat');
+        }
+      },
+    },
+  });
+};
 
   const handleChatCreated = () => {
     fetchChats(); // Refresh the chat list when a new chat is created

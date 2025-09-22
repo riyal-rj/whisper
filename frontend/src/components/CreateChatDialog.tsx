@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import axios from 'axios';
@@ -30,7 +29,7 @@ const CreateChatDialog: React.FC<CreateChatDialogProps> = ({ isOpen, onClose, on
       const fetchUsers = async () => {
         try {
           const token = localStorage.getItem('token');
-          const response = await axios.get('http://localhost:5000/api/v1/users', {
+          const response = await axios.get('http://localhost:5000/api/v1/', {
             headers: {
               Authorization: `Bearer ${token}`,
             },
