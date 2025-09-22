@@ -14,7 +14,7 @@ const envConfig = () => {
 
   return {
     NODE_ENV: getEnvVars("NODE_ENV", "development"),
-    //CORS_ORIGIN: getEnvVars("CORS_ORIGIN", "http://localhost:3000"),
+    CORS_ORIGIN: getEnvVars("CORS_ORIGIN"),
     USER_SERVICE_URL: getEnvVars("USER_SERVICE"),
 
     MONGO_URI: mongoUri,

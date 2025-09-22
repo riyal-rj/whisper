@@ -20,7 +20,10 @@ export const initSocket = (server: http.Server) => {
     if (userId) {
       userSocketMap.set(userId, socket.id);
     }
-
+    socket.on("joinChat", (chatId: string) => {
+      socket.join(chatId);
+      console.log(`User ${userId} joined chat ${chatId}`);
+    });
     socket.on("disconnect", () => {
       console.log("user disconnected", socket.id);
       if (userId) {

@@ -7,7 +7,8 @@ import axios from "axios";
 import { useAuth } from "../context/AuthContext";
 import { Send, Image as ImageIcon, X, Trash2 } from "lucide-react";
 import { Label } from "./ui/label";
-
+import { socket } from "../context/socket"; // ✅ import socket instance
+import { Check, CheckCheck } from "lucide-react";
 interface Message {
   _id: string;
   chatId: string;
@@ -40,7 +41,6 @@ interface Chat {
   members?: string[];
   unseenCount?: number;
   user?: {
-    // This will be the other user's data for direct chats
     _id: string;
     name: string;
     email: string;
@@ -59,7 +59,9 @@ const MessagingPanel: React.FC<MessagingPanelProps> = ({ selectedChat }) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
+  // 🔹 fetch initial messages
   const fetchMessages = async () => {
     if (!selectedChat || !user) return;
     try {
@@ -78,14 +80,69 @@ const MessagingPanel: React.FC<MessagingPanelProps> = ({ selectedChat }) => {
     }
   };
 
+  const markMessagesAsRead = () => {
+    const unreadMessageIds = messages
+      .filter(
+        (m) => m.sender !== user?._id && !m.seen // only unread from other person
+      )
+      .map((m) => m._id);
+
+    if (unreadMessageIds.length > 0) {
+      socket.emit("markAsRead", { messageIds: unreadMessageIds });
+      // optimistically mark them read locally
+      setMessages((prev) =>
+        prev.map((m) =>
+          unreadMessageIds.includes(m._id)
+            ? { ...m, seen: true, seenAt: new Date() }
+            : m
+        )
+      );
+    }
+  };
+
+  // 🔹 run on chat change
   useEffect(() => {
     fetchMessages();
+
+    // join the socket room for the selected chat
+    if (selectedChat) {
+      console.log("Joining chat room:", selectedChat._id);
+      socket.connect();
+      socket.emit("joinChat", selectedChat._id);
+
+      // listen for new messages
+      socket.off("newMessage"); // prevent duplicates
+      socket.on("newMessage", (message: Message) => {
+        if (message.chatId === selectedChat._id) {
+          setMessages((prev) => [...prev, message]);
+        }
+      });
+
+      socket.off("messageRead");
+      socket.on("messageRead", ({ messageId, seenAt }) => {
+        setMessages((prev) =>
+          prev.map((m) =>
+            m._id === messageId ? { ...m, seen: true, seenAt: seenAt } : m
+          )
+        );
+      });
+    }
+
+    // cleanup on unmount or chat change
+    return () => {
+      if (selectedChat) {
+        socket.emit("leaveChat", selectedChat._id);
+      }
+      socket.off("newMessage");
+      socket.off("messageRead");
+    };
   }, [selectedChat]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+  // 🔹 send message
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedChat || (!newMessage.trim() && !selectedFile)) return;
@@ -116,20 +173,19 @@ const MessagingPanel: React.FC<MessagingPanelProps> = ({ selectedChat }) => {
         }
       );
 
+      socket.emit("newMessage", response.data.message);
+
       setMessages((prev) => [...prev, response.data.message]);
       setNewMessage("");
       setSelectedFile(null);
       setPreviewUrl(null);
-      toast.success("Message sent!");
     } catch (error: any) {
       toast.error(error.response?.data?.message || "Failed to send message");
     }
   };
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-  const handleIconClick = () => {
-    fileInputRef.current?.click();
-  };
+  // 🔹 file upload handlers
+  const handleIconClick = () => fileInputRef.current?.click();
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
@@ -137,27 +193,26 @@ const MessagingPanel: React.FC<MessagingPanelProps> = ({ selectedChat }) => {
       setPreviewUrl(URL.createObjectURL(file));
     }
   };
-
   const handleRemoveFile = () => {
     setSelectedFile(null);
     setPreviewUrl(null);
   };
-const handleDeleteMessage = async (messageId: string) => {
-  try {
-    console.log("Deleting message with ID:", messageId);
-    const token = localStorage.getItem("token");
-    await axios.delete(`http://localhost:5002/api/v1/chat/msg/${messageId}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
 
-    setMessages((prev) => prev.filter((m) => m._id !== messageId));
-    toast.success("Message deleted");
-  } catch (error: any) {
-    toast.error(error.response?.data?.message || "Failed to delete message");
-  }
-};
+  // 🔹 delete message
+  const handleDeleteMessage = async (messageId: string) => {
+    try {
+      const token = localStorage.getItem("token");
+      await axios.delete(`http://localhost:5002/api/v1/chat/msg/${messageId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setMessages((prev) => prev.filter((m) => m._id !== messageId));
+      toast.success("Message deleted");
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || "Failed to delete message");
+    }
+  };
 
   if (!selectedChat) {
     return (
@@ -166,7 +221,6 @@ const handleDeleteMessage = async (messageId: string) => {
       </Card>
     );
   }
-
 
   return (
     <Card className="h-full flex flex-col">
@@ -178,53 +232,118 @@ const handleDeleteMessage = async (messageId: string) => {
         </h2>
       </div>
       <div className="flex-1 p-4 overflow-y-auto space-y-4">
-        {messages.map((msg) => (
-          console.log(msg),
-          <div
-    key={msg._id}
-    className={`flex ${
-      msg.sender === user?._id ? "justify-end" : "justify-start"
-    }`}
-  >
-    <div className="relative">
-      <div
-        className={`p-3 rounded-lg max-w-[70%] ${
-          msg.sender === user?._id
-            ? "bg-blue-500 text-white"
-            : "bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200"
-        }`}
-      >
-        {msg.messageType === "text" && <p>{msg.text}</p>}
-        {msg.messageType === "image" && msg.image && (
-          <img
-            src={msg.image.url}
-            alt="message image"
-            className="max-w-xs rounded-md"
-          />
-        )}
-        {msg.messageType === "video" && msg.video && (
-          <video
-            controls
-            src={msg.video.url}
-            className="max-w-xs rounded-md"
-          />
-        )}
-        <p className="text-xs mt-1 opacity-75">
-          {new Date(msg.createdAt).toLocaleTimeString()}
-        </p>
+        {messages.map((msg) => {
+          const isSender = msg.sender === user?._id;
+          return (
+            <div
+              key={msg._id}
+              className={`flex ${isSender ? "justify-end" : "justify-start"}`}
+            >
+              <div className="relative">
+                <div
+                  className={`p-3 rounded-lg max-w-[70%] ${
+                    isSender
+                      ? "bg-blue-500 text-white"
+                      : "bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200"
+                  }`}
+                >
+                  {msg.messageType === "text" && <p>{msg.text}</p>}
+                  {msg.messageType === "image" && msg.image && (
+                    <img
+                      src={msg.image.url}
+                      alt="message image"
+                      className="max-w-xs rounded-md"
+                    />
+                  )}
+                  {msg.messageType === "video" && msg.video && (
+                    <video
+                      controls
+                      src={msg.video.url}
+                      className="max-w-xs rounded-md"
+                    />
+                  )}
+                  <div className="flex items-center justify-between mt-1 text-xs opacity-75">
+                    <span>{new Date(msg.createdAt).toLocaleTimeString()}</span>
+
+                    {/* ✅ TICKS */}
+                    {isSender && (
+                      <>
+                        {!msg.seen && (
+                          <Check className="h-4 w-4 inline-block ml-1" />
+                        )}
+                        {msg.seen && (
+                          <CheckCheck
+                            className={`h-4 w-4 inline-block ml-1 ${
+                              msg.seenAt ? "text-blue-500" : ""
+                            }`}
+                          />
+                        )}
+                      </>
+                    )}
+                  </div>
+                </div>
+                {isSender && (
+                  <button
+                    onClick={() => handleDeleteMessage(msg._id)}
+                    className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+                    title="Delete message"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                )}
+              </div>
+            </div>
+          );
+        })}
+        <div ref={messagesEndRef} />
       </div>
-      {/* Show delete icon only if current user sent the message */}
-      {msg.sender === user?._id && (
-        <button
-          onClick={() => handleDeleteMessage(msg._id)}
-          className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
-          title="Delete message"
-        >
-          <Trash2 className="h-4 w-4" />
-        </button>
-      )}
-    </div>
-  </div>
+
+      <div className="flex-1 p-4 overflow-y-auto space-y-4">
+        {messages.map((msg) => (
+          <div
+            key={msg._id}
+            className={`flex ${
+              msg.sender === user?._id ? "justify-end" : "justify-start"
+            }`}
+          >
+            <div className="relative">
+              <div
+                className={`p-3 rounded-lg max-w-[70%] ${
+                  msg.sender === user?._id
+                    ? "bg-blue-500 text-white"
+                    : "bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200"
+                }`}
+              >
+                {msg.messageType === "text" && <p>{msg.text}</p>}
+                {msg.messageType === "image" && msg.image && (
+                  <img
+                    src={msg.image.url}
+                    alt="message image"
+                    className="max-w-xs rounded-md"
+                  />
+                )}
+                {msg.messageType === "video" && msg.video && (
+                  <video
+                    controls
+                    src={msg.video.url}
+                    className="max-w-xs rounded-md"
+                  />
+                )}
+                <p className="text-xs mt-1 opacity-75">
+                  {new Date(msg.createdAt).toLocaleTimeString()}
+                </p>
+              </div>
+              {msg.sender === user?._id && (
+                <button
+                  onClick={() => handleDeleteMessage(msg._id)}
+                  className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+                  title="Delete message"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </button>
+              )}
+            </div>
+          </div>
         ))}
         <div ref={messagesEndRef} />
       </div>
@@ -275,7 +394,12 @@ const handleDeleteMessage = async (messageId: string) => {
               onChange={handleFileChange}
               accept="image/*,video/*"
             />
-            <Button type="button" variant="outline" size="icon" onClick={handleIconClick}>
+            <Button
+              type="button"
+              variant="outline"
+              size="icon"
+              onClick={handleIconClick}
+            >
               <ImageIcon className="h-4 w-4" />
             </Button>
           </Label>
