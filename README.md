@@ -1,4 +1,4 @@
-# Sonic Chat Hub
+# Whisper
 
 A full‑stack, real‑time chat application with one‑to‑one and group conversations, rich media sharing (images/videos), read receipts, online presence, message and chat deletion, and group admin controls (add/remove members, rename group). The system is split into services and modern React frontends, with production‑ready features and AWS EC2 deployment guidance.
 
