@@ -91,6 +91,92 @@ export const createGroupChat = asyncHandler(
   }
 );
 
+export const addMemberToGroup = asyncHandler(
+  async (req: AuthenticatedRequest, res: Response) => {
+    const { chatId } = req.params;
+    const { userId: memberId } = req.body as { userId: string };
+    const requesterId = req.user?._id;
+
+    if (!chatId || !memberId) {
+      throw new BadRequestException("Chat ID and user ID are required");
+    }
+
+    const chat = await Chat.findById(chatId);
+    if (!chat) throw new NotFoundException("Chat not found");
+    if (!chat.isGroupChat) throw new BadRequestException("Not a group chat");
+    if (chat.groupAdmin?.toString() !== requesterId.toString()) {
+      throw new BadRequestException("Only group admin can add members");
+    }
+
+    const members = new Set<string>((chat.members || []).map(String));
+    if (members.has(memberId)) {
+      return res.status(HTTP_STATUS.OK).json({ message: "User already a member", chatId, userId: memberId });
+    }
+
+    members.add(memberId);
+    const users = new Set<string>(chat.users.map(String));
+    users.add(memberId);
+
+    chat.members = Array.from(members);
+    chat.users = Array.from(users);
+    await chat.save();
+
+    res.status(HTTP_STATUS.OK).json({ message: "Member added", chatId, userId: memberId });
+  }
+);
+
+export const removeMemberFromGroup = asyncHandler(
+  async (req: AuthenticatedRequest, res: Response) => {
+    const { chatId } = req.params;
+    const { userId: memberId } = req.body as { userId: string };
+    const requesterId = req.user?._id;
+
+    if (!chatId || !memberId) {
+      throw new BadRequestException("Chat ID and user ID are required");
+    }
+
+    const chat = await Chat.findById(chatId);
+    if (!chat) throw new NotFoundException("Chat not found");
+    if (!chat.isGroupChat) throw new BadRequestException("Not a group chat");
+    if (chat.groupAdmin?.toString() !== requesterId.toString()) {
+      throw new BadRequestException("Only group admin can remove members");
+    }
+    if (chat.groupAdmin?.toString() === memberId.toString()) {
+      throw new BadRequestException("Cannot remove group admin");
+    }
+
+    chat.members = (chat.members || []).filter((id) => id.toString() !== memberId.toString());
+    chat.users = chat.users.filter((id) => id.toString() !== memberId.toString());
+    await chat.save();
+
+    res.status(HTTP_STATUS.OK).json({ message: "Member removed", chatId, userId: memberId });
+  }
+);
+
+export const updateGroupName = asyncHandler(
+  async (req: AuthenticatedRequest, res: Response) => {
+    const { chatId } = req.params;
+    const { name } = req.body as { name: string };
+    const requesterId = req.user?._id;
+
+    if (!chatId || !name?.trim()) {
+      throw new BadRequestException("Chat ID and name are required");
+    }
+
+    const chat = await Chat.findById(chatId);
+    if (!chat) throw new NotFoundException("Chat not found");
+    if (!chat.isGroupChat) throw new BadRequestException("Not a group chat");
+    if (chat.groupAdmin?.toString() !== requesterId.toString()) {
+      throw new BadRequestException("Only group admin can rename the group");
+    }
+
+    chat.groupName = name.trim();
+    await chat.save();
+
+    res.status(HTTP_STATUS.OK).json({ message: "Group name updated", chatId, name: chat.groupName });
+  }
+);
+
 export const sendMessage = asyncHandler(
   async (req: AuthenticatedRequest, res: Response) => {
     const senderId = req.user?._id;

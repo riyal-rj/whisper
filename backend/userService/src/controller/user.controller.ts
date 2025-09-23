@@ -106,62 +106,57 @@ export const myProfileController = asyncHandler(
   }
 );
 
-export const updateNameController = asyncHandler(
+export const updateProfileController = asyncHandler(
   async (req: AuthenticatedRequest, res: Response) => {
+    // 1️⃣ Find User
+    console.log(req.user)
     const user = await User.findById(req.user?._id);
-
     if (!user) {
       throw new NotFoundException("User not found");
     }
 
-    user.name = req.body.name;
+    // 2️⃣ Handle name update (optional)
+    if (req.body.name) {
+      user.name = req.body.name;
+    }
+
+    // 3️⃣ Handle profile picture update (optional)
+    if (req.file) {
+      // Delete old profile picture from S3 if exists
+      if (user.profilePicture) {
+        try {
+          const oldKey = user.profilePicture.split(".com/")[1];
+          await s3.send(
+            new DeleteObjectCommand({
+              Bucket: ENV_VARS.AWS_S3_BUCKET_NAME,
+              Key: oldKey,
+            })
+          );
+        } catch (err) {
+          console.error("Error deleting old S3 object:", err);
+        }
+      }
+
+      // Save new profile picture
+      user.profilePicture = (req.file as any).location;
+    }
+
+    // Save updated user
     await user.save();
 
+    // 4️⃣ Refresh JWT token
     const { token, expiresAt } = signJwtToken({ userId: user._id.toString() });
 
-  res.status(HTTP_STATUS.OK).json({
-      message: "User Updated",
-      user,
-      token,
-      expiresAt,
-    });
-  }
-);
-
-export const changeProfilePictureController = asyncHandler(
-  async (req: AuthenticatedRequest, res: Response) => {
-    const user = await User.findById(req.user?._id);
-
-    if (!user) {
-      throw new NotFoundException("User not found");
-    }
-
-    if (user.profilePicture) {
-      const oldKey = user.profilePicture.split(".com/")[1];
-      const deleteParams = {
-        Bucket: ENV_VARS.AWS_S3_BUCKET_NAME,
-        Key: oldKey,
-      };
-      await s3.send(new DeleteObjectCommand(deleteParams));
-    }
-
-    if (!req.file) {
-      throw new BadRequestException("Please upload a file");
-    }
-
-    user.profilePicture = (req.file as any).location;
-    await user.save();
-
-    const { token, expiresAt } = signJwtToken({ userId: user._id.toString() });
-
+    // 5️⃣ Return updated user
     res.status(HTTP_STATUS.OK).json({
-      message: "Profile picture updated",
+      message: "Profile updated successfully",
       user,
       token,
       expiresAt,
     });
   }
 );
+
 
 export const getAllUsersController = asyncHandler(async (req: Request, res: Response) => {
   const users = await User.find();

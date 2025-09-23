@@ -12,7 +12,12 @@ import userRouter from "./routes/user.route";
 import { connectToRabbitMQ } from "./config/rabbitmq.config";
 const app = express();
 
-app.use(cors());
+app.use(cors(
+  {
+    origin: ENV_VARS.FRONTEND_URL,
+    credentials: true,
+  }
+));
 app.use(express.json());
 if(ENV_VARS.NODE_ENV === "development") {
   app.use(morgan("dev"));

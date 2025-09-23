@@ -26,7 +26,7 @@ const envConfig = () => {
     JWT_SECRET: getEnvVars("JWT_SECRET", "secret_jwt"),
     JWT_EXPIRES_IN: getEnvVars("JWT_EXPIRES_IN", "1d"),
 
-    FRONTEND_URL: getEnvVars("FRONTEND_URL", "http://localhost:3000"),
+    FRONTEND_URL: getEnvVars("FRONTEND_URL", "http://localhost:8081"),
 
     AWS_ACCESS_KEY_ID: getEnvVars("AWS_ACCESS_KEY_ID"),
     AWS_SECRET_ACCESS_KEY: getEnvVars("AWS_SECRET_ACCESS_KEY"),

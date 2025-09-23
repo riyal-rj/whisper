@@ -1,11 +1,10 @@
 import { Router } from "express";
 import {
-  changeProfilePictureController,
   getAUserController,
   getAllUsersController,
   loginUserController,
   myProfileController,
-  updateNameController,
+  updateProfileController,
   verifyUserController,
 } from "../controller/user.controller";
 import { isAuth } from "../middleware/auth.middleware";
@@ -17,12 +16,11 @@ userRouter.post("/login", loginUserController);
 userRouter.post("/verify", verifyUserController);
 
 userRouter.get("/me", isAuth, myProfileController);
-userRouter.put("/update-name", isAuth, updateNameController);
 userRouter.put(
-  "/update-profile-picture",
+  "/update-profile",
   isAuth,
   upload.single("profilePicture"),
-  changeProfilePictureController
+  updateProfileController
 );
 
 userRouter.get("/", getAllUsersController);

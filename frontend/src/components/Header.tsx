@@ -1,59 +1,73 @@
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { MessageCircle, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { useAuth } from '../context/AuthContext';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { useAuth } from '@/contexts/AuthContext';
+import { ProfileModal } from '@/components/ProfileModal';
 
-const Header: React.FC = () => {
-  const { user, logout } = useAuth();
-  const navigate = useNavigate();
+export const Header: React.FC = () => {
+  const { user: currentUser, logout } = useAuth();
+  const [showProfileModal, setShowProfileModal] = React.useState(false);
 
-  const handleLogout = () => {
-    logout();
-    navigate('/login');
-  };
+  if (!currentUser) return null;
 
   return (
-    <header className="bg-white dark:bg-gray-800 shadow-sm py-4 px-6 flex items-center justify-between">
-      <Link to="/" className="text-3xl font-bold text-gray-900 dark:text-gray-100">
-        Whisper
-      </Link>
-      <div className="flex items-center space-x-4">
-        {user ? (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="relative h-10 w-10 rounded-full" onClick={() => navigate('/profile')}>
-                <Avatar className="h-10 w-10">
-                  <AvatarImage src={user.profilePicture} alt={user.name} />
-                  <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
+    <>
+      <header className="h-16 bg-surface border-b border-border flex items-center justify-between px-6 shrink-0">
+        <div className="flex items-center gap-3">
+          <MessageCircle className="w-8 h-8 text-primary" />
+          <h1 className="text-xl font-semibold text-foreground">Whisper</h1>
+        </div>
+
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" className="flex items-center gap-2 p-2">
+              <Avatar className="w-8 h-8">
+                <AvatarImage src={currentUser.profilePicture} alt={currentUser.name} />
+                <AvatarFallback>{currentUser.name.charAt(0)}</AvatarFallback>
+              </Avatar>
+              <ChevronDown className="w-4 h-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-64">
+            <div className="p-3 border-b border-border">
+              <div className="flex items-center gap-3">
+                <Avatar className="w-10 h-10">
+                  <AvatarImage src={currentUser.profilePicture} alt={currentUser.name} />
+                  <AvatarFallback>{currentUser.name.charAt(0)}</AvatarFallback>
                 </Avatar>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-56" align="end" forceMount>
-              <DropdownMenuLabel className="font-normal">
-                <div className="flex flex-col space-y-1">
-                  <p className="text-sm font-medium leading-none">{user.name}</p>
-                  <p className="text-xs leading-none text-muted-foreground">
-                    {user.email}
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-foreground truncate">
+                    {currentUser.name}
+                  </p>
+                  <p className="text-xs text-muted-foreground truncate">
+                    {currentUser.email}
                   </p>
                 </div>
-              </DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => navigate('/profile')}>
-                Update Profile
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={handleLogout}>
-                Log out
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        ) : (
-          <Button onClick={() => navigate('/login')}>Login</Button>
-        )}
-      </div>
-    </header>
+              </div>
+            </div>
+            <DropdownMenuItem onClick={() => setShowProfileModal(true)}>
+              Update Profile
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={logout} className="text-destructive">
+              Logout
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </header>
+
+      <ProfileModal 
+        isOpen={showProfileModal} 
+        onClose={() => setShowProfileModal(false)} 
+      />
+    </>
   );
 };
-
-export default Header;

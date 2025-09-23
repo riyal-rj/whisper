@@ -8,7 +8,7 @@ const userSocketMap = new Map<string, string>();
 export const initSocket = (server: http.Server) => {
   io = new Server(server, {
     cors: {
-      origin: ENV_VARS.CORS_ORIGIN,
+      origin:  ["http://localhost:8080", "http://localhost:5173"], 
       methods: ["GET", "POST"],
     },
   });
@@ -19,6 +19,10 @@ export const initSocket = (server: http.Server) => {
     const userId = socket.handshake.query.userId as string;
     if (userId) {
       userSocketMap.set(userId, socket.id);
+      // broadcast presence
+      io.emit("userStatus", { userId, isOnline: true });
+      // send current online users to the connected client
+      socket.emit("onlineUsers", Array.from(userSocketMap.keys()));
     }
     socket.on("joinChat", (chatId: string) => {
       socket.join(chatId);
@@ -28,6 +32,7 @@ export const initSocket = (server: http.Server) => {
       console.log("user disconnected", socket.id);
       if (userId) {
         userSocketMap.delete(userId);
+        io.emit("userStatus", { userId, isOnline: false });
       }
     });
   });
