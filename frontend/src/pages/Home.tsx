@@ -19,15 +19,16 @@ const Home = () => {
           </div>
         </div>
         
-        <Link to="/login">
-          <Button 
-            size="lg" 
-            className="w-full"
-            variant="default"
-          >
-            Get Started
-          </Button>
-        </Link>
+        <div className="space-y-4">
+          <Link to="/login">
+            <Button size="lg" className="px-12 py-6 text-lg">
+              Login
+            </Button>
+          </Link>
+          <p className="text-sm text-muted-foreground">
+            New to Whisper? Login with your email to get started.
+          </p>
+        </div>
       </div>
     </div>
   );
