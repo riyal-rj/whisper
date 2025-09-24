@@ -49,13 +49,11 @@ export const ChatPanel: React.FC = () => {
 
   if (!activeChat) {
     return (
-      <div className="flex-1 bg-chat-bg flex items-center justify-center">
+      <div className="flex-1 bg-background flex items-center justify-center">
         <div className="text-center text-muted-foreground">
-          <div className="w-32 h-32 bg-primary/10 rounded-full flex items-center justify-center mb-6 mx-auto">
-            <MessageCircle className="w-16 h-16 text-primary/50" />
-          </div>
-          <h2 className="text-2xl font-semibold mb-2">Welcome to Whisper</h2>
-          <p className="text-lg">Select a chat to start messaging</p>
+          <MessageCircle className="w-12 h-12 mx-auto mb-3 opacity-40" />
+          <h2 className="text-lg font-medium mb-1">Select a conversation</h2>
+          <p className="text-sm">Choose a chat to start messaging</p>
         </div>
       </div>
     );
@@ -82,28 +80,27 @@ export const ChatPanel: React.FC = () => {
   };
 
   return (
-    <div className="flex-1 bg-chat-bg flex flex-col">
+    <div className="flex-1 bg-background flex flex-col">
       {/* Chat header */}
-      <div className="h-16 bg-surface border-b border-border flex items-center justify-between px-6">
+      <div className="h-14 bg-background border-b border-border flex items-center justify-between px-4">
         <div className="flex items-center gap-3">
-          <Avatar className="w-10 h-10">
+          <Avatar className="w-8 h-8">
             <AvatarImage 
               src={activeChat.isGroupChat ? undefined : otherParticipant?.profilePicture} 
               alt={chatName} 
             />
-            <AvatarFallback className="bg-primary/20 text-primary">
-              {activeChat.isGroupChat ? <Users className="w-5 h-5" /> : chatName.charAt(0)}
+            <AvatarFallback className="bg-muted text-foreground text-sm">
+              {activeChat.isGroupChat ? <Users className="w-4 h-4" /> : chatName.charAt(0)}
             </AvatarFallback>
           </Avatar>
           <div className="cursor-pointer select-none" onClick={() => setOpenInfo(true)}>
-            <h2 className="font-semibold text-foreground flex items-center gap-1">
+            <h2 className="text-sm font-medium text-foreground flex items-center gap-1">
               {chatName}
               {activeChat.isGroupChat && currentUser?._id === (activeChat as any).groupAdmin && (
-                <Crown className="w-4 h-4 text-yellow-500" aria-label="Group admin" />
+                <Crown className="w-3 h-3 text-yellow-500" aria-label="Group admin" />
               )}
-              <Info className="w-4 h-4 text-muted-foreground" />
             </h2>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-xs text-muted-foreground">
               {activeChat.isGroupChat ? 
                 `${(activeChat.members || []).length} members` :
                 (isOnline ? 'Online' : 'Offline')
@@ -112,18 +109,18 @@ export const ChatPanel: React.FC = () => {
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
-          <Button variant="ghost" size="icon">
-            <Phone className="w-5 h-5" />
+        <div className="flex items-center gap-1">
+          <Button variant="ghost" size="icon" className="h-8 w-8">
+            <Phone className="w-4 h-4" />
           </Button>
-          <Button variant="ghost" size="icon">
-            <Video className="w-5 h-5" />
+          <Button variant="ghost" size="icon" className="h-8 w-8">
+            <Video className="w-4 h-4" />
           </Button>
-          <Button variant="ghost" size="icon" onClick={() => setOpenDelete(true)} title="Delete chat">
-            <Trash2 className="w-5 h-5" />
+          <Button variant="ghost" size="icon" onClick={() => setOpenDelete(true)} title="Delete chat" className="h-8 w-8">
+            <Trash2 className="w-4 h-4" />
           </Button>
-          <Button variant="ghost" size="icon">
-            <MoreVertical className="w-5 h-5" />
+          <Button variant="ghost" size="icon" className="h-8 w-8">
+            <MoreVertical className="w-4 h-4" />
           </Button>
         </div>
       </div>

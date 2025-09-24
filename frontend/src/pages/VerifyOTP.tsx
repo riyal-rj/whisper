@@ -78,70 +78,63 @@ const VerifyOTP = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      <div className="w-full max-w-md space-y-6">
-        <div className="flex items-center justify-between">
-          <Link to="/login" className="flex items-center text-muted-foreground hover:text-foreground transition-colors">
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back
-          </Link>
+    <div className="min-h-screen bg-background flex items-center justify-center px-4">
+      <div className="max-w-sm w-full space-y-8">
+        <div className="text-center space-y-4">
+          <div className="w-12 h-12 bg-foreground rounded-lg mx-auto flex items-center justify-center">
+            <MessageCircle className="w-6 h-6 text-background" />
+          </div>
+          <div className="space-y-1">
+            <h1 className="text-xl font-medium text-foreground">Enter verification code</h1>
+            <p className="text-sm text-muted-foreground">
+              We sent a 6-digit code to {email}
+            </p>
+          </div>
         </div>
 
-        <Card>
-          <CardHeader className="text-center">
-            <div className="flex justify-center mb-4">
-              <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
-                <MessageCircle className="w-6 h-6 text-primary" />
-              </div>
+        <div className="clean-card p-6 space-y-4">
+          <form onSubmit={handleVerifyOTP} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="otp" className="text-sm font-medium">Verification Code</Label>
+              <Input
+                id="otp"
+                type="text"
+                placeholder="000000"
+                value={otp}
+                onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                disabled={isLoading}
+                autoFocus
+                maxLength={6}
+                className="border-border text-center text-lg tracking-widest"
+              />
             </div>
-            <CardTitle className="text-2xl">Verify OTP</CardTitle>
-            <CardDescription>
-              Enter the 6-digit code sent to<br />
-              <span className="font-medium">{email}</span>
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleVerifyOTP} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="otp">OTP Code</Label>
-                <Input
-                  id="otp"
-                  type="text"
-                  placeholder="000000"
-                  value={otp}
-                  onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                  disabled={isLoading}
-                  autoFocus
-                  className="text-center text-2xl tracking-widest"
-                  maxLength={6}
-                />
-              </div>
-              
-              <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? (
-                  <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Verifying...
-                  </>
-                ) : (
-                  'Verify'
-                )}
-              </Button>
 
-              <div className="text-center">
-                <Button 
-                  type="button" 
-                  variant="ghost" 
-                  onClick={handleResendOTP}
-                  disabled={isLoading}
-                  className="text-sm"
-                >
-                  Didn't receive the code? Resend
-                </Button>
-              </div>
-            </form>
-          </CardContent>
-        </Card>
+            <Button 
+              type="submit" 
+              disabled={!otp || isLoading}
+              className="w-full"
+              variant="default"
+            >
+              {isLoading ? 'Verifying...' : 'Verify'}
+            </Button>
+
+            <Button 
+              type="button"
+              variant="ghost" 
+              onClick={handleResendOTP}
+              disabled={isLoading}
+              className="w-full text-sm"
+            >
+              Didn't receive the code? Resend
+            </Button>
+          </form>
+        </div>
+
+        <div className="text-center">
+          <Link to="/login" className="text-sm text-muted-foreground hover:text-foreground">
+            ← Back to login
+          </Link>
+        </div>
       </div>
     </div>
   );

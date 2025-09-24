@@ -37,7 +37,7 @@ export const Sidebar: React.FC = () => {
 
   return (
     <>
-      <div className="w-80 bg-sidebar-bg border-r border-border flex flex-col h-full">
+      <div className="w-72 bg-surface border-r border-border flex flex-col h-full">
         {/* Search and Create buttons */}
         <div className="p-4 border-b border-border space-y-3">
           <div className="relative">
@@ -46,12 +46,12 @@ export const Sidebar: React.FC = () => {
               placeholder="Search chats..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 bg-surface border-border"
+              className="pl-10 bg-background border-border"
             />
           </div>
           <div className="flex gap-2">
             <Button 
-              variant="chat" 
+              variant="clean" 
               size="sm" 
               onClick={() => setShowCreateChat(true)}
               className="flex-1"
@@ -60,7 +60,7 @@ export const Sidebar: React.FC = () => {
               New Chat
             </Button>
             <Button 
-              variant="secondary" 
+              variant="clean" 
               size="sm" 
               onClick={() => setShowCreateGroup(true)}
               className="flex-1"
@@ -75,9 +75,8 @@ export const Sidebar: React.FC = () => {
         <div className="flex-1 overflow-y-auto custom-scrollbar">
           {filteredChats.length === 0 ? (
             <div className="p-6 text-center text-muted-foreground">
-              <MessageCircle className="w-12 h-12 mx-auto mb-3 opacity-50" />
-              <p>No chats found</p>
-              <p className="text-sm">Start a new conversation</p>
+              <MessageCircle className="w-8 h-8 mx-auto mb-2 opacity-40" />
+              <p className="text-sm">No chats found</p>
             </div>
           ) : (
             <div className="space-y-1 p-2">
@@ -94,29 +93,29 @@ export const Sidebar: React.FC = () => {
                     onClick={() => setActiveChat(chat)}
                     className={`p-3 rounded-lg cursor-pointer transition-colors ${
                       activeChat?._id === chat._id 
-                        ? 'bg-primary/10 border border-primary/20' 
-                        : 'hover:bg-surface'
+                        ? 'bg-accent' 
+                        : 'hover:bg-muted'
                     }`}
                   >
                     <div className="flex items-center gap-3">
                       <div className="relative">
-                        <Avatar className="w-12 h-12">
+                        <Avatar className="w-10 h-10">
                           <AvatarImage 
                             src={chat.isGroupChat ? undefined : otherParticipant?.profilePicture} 
                             alt={chatName} 
                           />
-                          <AvatarFallback className="bg-primary/20 text-primary">
-                            {chat.isGroupChat ? <Users className="w-5 h-5" /> : chatName.charAt(0)}
+                          <AvatarFallback className="bg-muted text-foreground text-sm">
+                            {chat.isGroupChat ? <Users className="w-4 h-4" /> : chatName.charAt(0)}
                           </AvatarFallback>
                         </Avatar>
                         {!chat.isGroupChat && isOnline && (
-                          <div className="status-dot status-online absolute -bottom-0.5 -right-0.5" />
+                          <div className="status-dot status-online absolute -bottom-0 -right-0" />
                         )}
                       </div>
                       
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between mb-1">
-                          <h3 className="font-medium text-foreground truncate">
+                          <h3 className="text-sm font-medium text-foreground truncate">
                             {chatName}
                           </h3>
                           {chat.latestMessage?.createdAt && (
@@ -127,11 +126,11 @@ export const Sidebar: React.FC = () => {
                         </div>
                         
                         <div className="flex items-center justify-between">
-                          <p className="text-sm text-muted-foreground truncate">
+                          <p className="text-xs text-muted-foreground truncate">
                             {chat.latestMessage?.text || 'No messages yet'}
                           </p>
                           {chat.unreadCount > 0 && (
-                            <Badge className="bg-primary text-primary-foreground text-xs min-w-5 h-5 rounded-full flex items-center justify-center">
+                            <Badge className="bg-primary text-primary-foreground text-xs min-w-5 h-5 rounded-full">
                               {chat.unreadCount > 99 ? '99+' : chat.unreadCount}
                             </Badge>
                           )}

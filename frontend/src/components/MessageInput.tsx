@@ -32,8 +32,8 @@ export const MessageInput: React.FC = () => {
   const handleFile = async (file: File, type: 'image' | 'video') => {
     if (!activeChat) return;
 
-    if (file.size > 10 * 1024 * 1024) {
-      toast({ title: 'File too large', description: 'Max size is 10MB', variant: 'destructive' });
+    if (file.size > 500 * 1024 * 1024) {
+      toast({ title: 'File too large', description: 'Max size is 500MB', variant: 'destructive' });
       return;
     }
 
@@ -60,51 +60,42 @@ export const MessageInput: React.FC = () => {
   if (!activeChat) return null;
 
   return (
-    <div className="p-4 bg-surface border-t border-border">
-      <div className="flex items-end gap-2">
+    <div className="p-4 bg-background border-t border-border">
+      <div className="flex items-center gap-2">
         <div className="flex gap-1">
           <Button
             variant="ghost"
             size="icon"
             onClick={() => imageInputRef.current?.click()}
-            className="text-muted-foreground hover:text-primary"
+            className="text-muted-foreground hover:text-foreground h-8 w-8"
           >
-            <Image className="w-5 h-5" />
+            <Image className="w-4 h-4" />
           </Button>
           <Button
             variant="ghost"
             size="icon"
             onClick={() => videoInputRef.current?.click()}
-            className="text-muted-foreground hover:text-primary"
+            className="text-muted-foreground hover:text-foreground h-8 w-8"
           >
-            <Video className="w-5 h-5" />
+            <Video className="w-4 h-4" />
           </Button>
         </div>
 
-        <div className="flex-1 relative">
+        <div className="flex-1">
           <Input
             placeholder="Type a message..."
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             onKeyPress={handleKeyPress}
-            className="pr-12 bg-input border-border resize-none"
+            className="bg-muted border-border"
           />
-          <Button
-            variant="ghost"
-            size="icon"
-            className="absolute right-1 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-primary"
-            tabIndex={-1}
-          >
-            <Smile className="w-4 h-4" />
-          </Button>
         </div>
 
         <Button
-          variant="message"
-          size="message"
+          size="icon"
           onClick={handleSend}
           disabled={!message.trim()}
-          className="shrink-0"
+          className="h-8 w-8"
         >
           <Send className="w-4 h-4" />
         </Button>

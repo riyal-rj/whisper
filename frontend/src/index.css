@@ -2,69 +2,117 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Whisper Chat App Design System - Modern messaging interface */
+/* Whisper Chat App Design System - Clean & Minimal */
 
 @layer base {
   :root {
-    /* Core backgrounds */
-    --background: 240 10% 3.9%;
-    --foreground: 0 0% 98%;
-    --surface: 240 10% 8%;
-    --surface-light: 240 6% 12%;
+    /* Core backgrounds - Clean light theme */
+    --background: 0 0% 100%;
+    --foreground: 0 0% 3.9%;
+    --surface: 0 0% 98%;
+    --surface-light: 0 0% 96%;
 
     /* Chat-specific colors */
-    --chat-bg: 240 8% 6%;
-    --sidebar-bg: 240 10% 4.5%;
-    --message-sent: 200 95% 45%;
-    --message-received: 240 6% 12%;
+    --chat-bg: 0 0% 99%;
+    --sidebar-bg: 0 0% 97%;
+    --message-sent: 220 13% 91%;
+    --message-received: 0 0% 96%;
     
-    /* Brand colors */
-    --primary: 200 95% 50%;
-    --primary-hover: 200 95% 45%;
+    /* Brand colors - Minimal */
+    --primary: 0 0% 9%;
+    --primary-hover: 0 0% 15%;
     --primary-foreground: 0 0% 98%;
     
-    --secondary: 240 6% 15%;
-    --secondary-foreground: 0 0% 98%;
-    --secondary-hover: 240 6% 18%;
+    --secondary: 0 0% 96%;
+    --secondary-foreground: 0 0% 9%;
+    --secondary-hover: 0 0% 92%;
 
     /* Status colors */
-    --online: 142 70% 45%;
-    --offline: 240 5% 64.9%;
-    --sent: 240 5% 64.9%;
-    --read: 200 95% 45%;
+    --online: 142 76% 36%;
+    --offline: 0 0% 64.9%;
+    --sent: 0 0% 64.9%;
+    --read: 220 13% 69%;
 
     /* UI elements */
-    --card: 240 6% 12%;
-    --card-foreground: 0 0% 95%;
-    --popover: 240 6% 15%;
-    --popover-foreground: 0 0% 95%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 3.9%;
     
-    --muted: 240 6% 18%;
-    --muted-foreground: 240 5% 64.9%;
+    --muted: 0 0% 96%;
+    --muted-foreground: 0 0% 45.1%;
     
-    --accent: 240 6% 18%;
-    --accent-foreground: 0 0% 95%;
+    --accent: 0 0% 96%;
+    --accent-foreground: 0 0% 9%;
     
-    --destructive: 0 62.8% 50%;
+    --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
     
-    --border: 240 6% 20%;
-    --input: 240 6% 12%;
-    --ring: 200 95% 50%;
+    --border: 0 0% 89.8%;
+    --input: 0 0% 100%;
+    --ring: 0 0% 3.9%;
     
-    --radius: 0.75rem;
+    --radius: 0.5rem;
 
-    /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(200 90% 55%));
-    --gradient-surface: linear-gradient(180deg, hsl(var(--surface)), hsl(var(--surface-light)));
+    /* Subtle effects only */
+    --shadow-soft: 0 1px 3px 0 hsl(0 0% 0% / 0.1), 0 1px 2px -1px hsl(0 0% 0% / 0.1);
+    --shadow-message: 0 1px 2px hsl(0 0% 0% / 0.05);
     
-    /* Shadows */
-    --shadow-soft: 0 4px 20px -2px hsl(var(--primary) / 0.1);
-    --shadow-message: 0 1px 2px hsl(240 10% 3.9% / 0.3);
+    /* Smooth transitions */
+    --transition-smooth: all 0.2s ease-in-out;
+    --transition-quick: all 0.1s ease-out;
+  }
+
+  .dark {
+    /* Core backgrounds - Clean dark theme */
+    --background: 0 0% 3.9%;
+    --foreground: 0 0% 98%;
+    --surface: 0 0% 5%;
+    --surface-light: 0 0% 7%;
+
+    /* Chat-specific colors */
+    --chat-bg: 0 0% 4%;
+    --sidebar-bg: 0 0% 6%;
+    --message-sent: 220 13% 15%;
+    --message-received: 0 0% 8%;
     
-    /* Animations */
-    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-quick: all 0.15s ease-out;
+    /* Brand colors - Minimal */
+    --primary: 0 0% 98%;
+    --primary-hover: 0 0% 90%;
+    --primary-foreground: 0 0% 9%;
+    
+    --secondary: 0 0% 10%;
+    --secondary-foreground: 0 0% 98%;
+    --secondary-hover: 0 0% 15%;
+
+    /* Status colors */
+    --online: 142 76% 36%;
+    --offline: 0 0% 64.9%;
+    --sent: 0 0% 64.9%;
+    --read: 220 13% 69%;
+
+    /* UI elements */
+    --card: 0 0% 3.9%;
+    --card-foreground: 0 0% 98%;
+    --popover: 0 0% 3.9%;
+    --popover-foreground: 0 0% 98%;
+    
+    --muted: 0 0% 8%;
+    --muted-foreground: 0 0% 63.9%;
+    
+    --accent: 0 0% 10%;
+    --accent-foreground: 0 0% 98%;
+    
+    --destructive: 0 62.8% 60.5%;
+    --destructive-foreground: 0 0% 98%;
+    
+    --border: 0 0% 14.9%;
+    --input: 0 0% 10%;
+    --ring: 0 0% 83.1%;
+
+    /* Subtle effects for dark */
+    --shadow-soft: 0 1px 3px 0 hsl(0 0% 0% / 0.3), 0 1px 2px -1px hsl(0 0% 0% / 0.3);
+    --shadow-message: 0 1px 2px hsl(0 0% 0% / 0.2);
   }
 }
 
@@ -103,39 +151,38 @@
 }
 
 @layer components {
-  /* Message bubble animations */
+  /* Clean message bubbles */
   .message-bubble {
-    @apply rounded-2xl px-3 py-2 max-w-xs break-words transition-all duration-200;
+    @apply rounded-lg px-3 py-2 max-w-xs break-words;
+    transition: var(--transition-quick);
     box-shadow: var(--shadow-message);
   }
   
   .message-sent {
-    @apply bg-message-sent text-white ml-auto;
-    background: var(--gradient-primary);
+    @apply bg-message-sent text-foreground ml-auto;
   }
   
   .message-received {
     @apply bg-message-received text-foreground;
   }
   
-  /* Status indicators */
+  /* Clean status indicators */
   .status-dot {
-    @apply w-2 h-2 rounded-full transition-colors duration-300;
+    @apply w-2 h-2 rounded-full;
+    transition: var(--transition-quick);
   }
   
   .status-online {
     @apply bg-online;
-    box-shadow: 0 0 0 2px hsl(var(--background)), 0 0 6px hsl(var(--online) / 0.5);
   }
   
   .status-offline {
     @apply bg-offline;
   }
   
-  /* Glassmorphism effect */
-  .glass-effect {
-    backdrop-filter: blur(12px);
-    background: hsl(var(--surface) / 0.8);
-    border: 1px solid hsl(var(--border) / 0.5);
+  /* Clean card effect */
+  .clean-card {
+    @apply bg-card border border-border rounded-lg;
+    box-shadow: var(--shadow-soft);
   }
 }

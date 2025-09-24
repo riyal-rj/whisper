@@ -57,54 +57,50 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      <div className="w-full max-w-md space-y-6">
-        <div className="flex items-center justify-between">
-          <Link to="/" className="flex items-center text-muted-foreground hover:text-foreground transition-colors">
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back
-          </Link>
+    <div className="min-h-screen bg-background flex items-center justify-center px-4">
+      <div className="max-w-sm w-full space-y-8">
+        <div className="text-center space-y-4">
+          <div className="w-12 h-12 bg-foreground rounded-lg mx-auto flex items-center justify-center">
+            <MessageCircle className="w-6 h-6 text-background" />
+          </div>
+          <div className="space-y-1">
+            <h1 className="text-xl font-medium text-foreground">Welcome back</h1>
+            <p className="text-sm text-muted-foreground">Enter your email to continue</p>
+          </div>
         </div>
 
-        <Card>
-          <CardHeader className="text-center">
-            <div className="flex justify-center mb-4">
-              <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
-                <MessageCircle className="w-6 h-6 text-primary" />
-              </div>
+        <div className="clean-card p-6 space-y-4">
+          <form onSubmit={handleSendOTP} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="email" className="text-sm font-medium">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="your@email.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                disabled={isLoading}
+                autoFocus
+                className="border-border"
+              />
             </div>
-            <CardTitle className="text-2xl">Welcome Back</CardTitle>
-            <CardDescription>
-              Enter your email to receive a login code
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSendOTP} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="Enter your email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  disabled={isLoading}
-                  autoFocus
-                />
-              </div>
-              <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? (
-                  <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Sending OTP...
-                  </>
-                ) : (
-                  'Send OTP'
-                )}
-              </Button>
-            </form>
-          </CardContent>
-        </Card>
+
+            <Button 
+              type="submit" 
+              disabled={!email || isLoading}
+              className="w-full"
+              variant="default"
+            >
+              {isLoading ? 'Sending...' : 'Send OTP'}
+            </Button>
+          </form>
+        </div>
+
+        <div className="text-center">
+          <Link to="/" className="text-sm text-muted-foreground hover:text-foreground">
+            ← Back to home
+          </Link>
+        </div>
       </div>
     </div>
   );
