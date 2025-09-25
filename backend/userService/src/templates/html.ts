@@ -240,14 +240,14 @@ export const otpEMailTemplate = `
             <div class="help-section">
                 <h3>Need Help?</h3>
                 <p>
-                    If you're having trouble with the verification process or didn't request this code, please contact our support team at <strong>support@whisper.com</strong> or visit our help center.
+                    If you're having trouble with the verification process or didn't request this code, please contact our support team at <strong>support@Whispr.com</strong> or visit our help center.
                 </p>
             </div>
         </div>
         
         <!-- Footer -->
         <div class="footer">
-            <p class="company-name">Whisper</p>
+            <p class="company-name">Whispr</p>
             <p>Making your digital experience secure and seamless</p>
             <p style="font-size: 12px; margin-top: 15px;">
                 This is an automated email. Please do not reply to this message.
@@ -608,14 +608,14 @@ export const verfiedEmailTemplate = `
             <div class="support-section">
                 <h3>🤝 Need Help Getting Started?</h3>
                 <p>
-                    Our support team is here to help you every step of the way. Check out our getting started guide, browse our help center, or reach out to us directly at <strong>support@whisper.com</strong>
+                    Our support team is here to help you every step of the way. Check out our getting started guide, browse our help center, or reach out to us directly at <strong>support@Whispr.com</strong>
                 </p>
             </div>
         </div>
         
         <!-- Footer -->
         <div class="footer">
-            <p class="company-name">Whisper</p>
+            <p class="company-name">Whispr</p>
             <p>Thank you for choosing us for your digital journey</p>
             <p style="font-size: 12px; margin-top: 15px;">
                 This is an automated welcome email. You can update your email preferences in your account settings.

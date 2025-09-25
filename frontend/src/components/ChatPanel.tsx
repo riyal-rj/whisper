@@ -110,12 +110,7 @@ export const ChatPanel: React.FC = () => {
         </div>
 
         <div className="flex items-center gap-1">
-          <Button variant="ghost" size="icon" className="h-8 w-8">
-            <Phone className="w-4 h-4" />
-          </Button>
-          <Button variant="ghost" size="icon" className="h-8 w-8">
-            <Video className="w-4 h-4" />
-          </Button>
+          
           <Button variant="ghost" size="icon" onClick={() => setOpenDelete(true)} title="Delete chat" className="h-8 w-8">
             <Trash2 className="w-4 h-4" />
           </Button>

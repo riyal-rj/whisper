@@ -27,7 +27,7 @@ export const Header: React.FC = () => {
           <div className="w-7 h-7 bg-foreground rounded-md flex items-center justify-center">
             <MessageCircle className="w-4 h-4 text-background" />
           </div>
-          <h1 className="text-lg font-medium text-foreground">Whisper</h1>
+          <h1 className="text-lg font-medium text-foreground">Whispr</h1>
         </div>
 
         <div className="flex items-center gap-2">

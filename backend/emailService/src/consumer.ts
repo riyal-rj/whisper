@@ -45,7 +45,7 @@ const emailConsumer = async (queueName: string, logMessage: string) => {
             });
           }
           await transporter.sendMail({
-            from: `"Whisper" <${ENV_VARS.NODEMAILER_USER}>`,
+            from: `"Whispr" <${ENV_VARS.NODEMAILER_USER}>`,
             to,
             subject,
             html: processedHtml,
